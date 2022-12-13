@@ -1,0 +1,141 @@
+
+import React from 'react';
+import {
+    Alert,
+    TextInput,
+    SafeAreaView,
+    StyleSheet,
+    ScrollView,
+    View,
+    Text,
+    StatusBar,
+    Image,
+    Button,
+    TouchableOpacity,
+    ImageBackground,
+    Dimensions,
+    Overlay,
+} from 'react-native';
+
+import { getcashRecord, getCashLists } from '../../network/authapi.js'
+const Toast = Overlay.Toast;
+
+import LinearGradient from 'react-native-linear-gradient'
+const width = Dimensions.get('window').width;
+
+import common from '../../css/common.js'
+import css from '../../css/exchangerecord.js'
+
+class cashrecord extends React.Component {
+    state = {
+        list: [],
+        page: 1,
+    }
+    componentDidMount() {
+        // Toast.show('res.msg, 2000');
+        this.getCashList();
+    }
+    getCashList() {
+        var that = this;
+        let { navigation } = this.props;
+        var fromData = {};
+        fromData['page'] = this.state.page;
+        getCashLists(fromData, res => {
+        // console.log(res)
+            if (res.code == 1) {
+                this.setState({
+                    list: this.state.list.concat(res.data.list.data)
+                })
+            } else if (res.code == -1) {
+                Toast.show(res.msg);
+                setTimeout(function () {
+                    navigation.navigate('login')
+                }, 2000)
+            } else {
+                Toast.show(res.msg, 2000);
+            }
+        })
+    }
+
+    getStr(str) {
+        var res = str.substr(-4)
+        return res;
+    }
+
+    _contentViewScroll(e) {
+        var offsetY = e.nativeEvent.contentOffset.y; //滑动距离
+        var contentSizeHeight = e.nativeEvent.contentSize.height; //scrollView contentSize高度
+        var oriageScrollHeight = e.nativeEvent.layoutMeasurement.height; //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight) {
+            // Console.log('上传滑动到底部事件')
+            this.setState({
+                page: this.state.page + 1,
+            }, this.getCashList())
+
+        }
+    }
+    render() {
+        let { navigation } = this.props;
+        return (
+            <View style={common.body}>
+                {/* 头部 */}
+                <View style={[common.header]}>
+                    <TouchableOpacity onPress={() => { navigation.goBack(); }} style={common.headerLeft}>
+                        <Image source={require('../../image/return.png')} style={common.returnIcon} />
+                    </TouchableOpacity >
+                    <View style={common.headerTitle}><Text style={common.headerTitleText}>提现记录</Text></View>
+                </View>
+
+                <View style={[common.main, { marginTop: 0 }]}>
+                    {/* <View style={[css.navWrap]}>
+                        <Text style={[css.nav,css.navActive]}>USDT</Text>
+                        <Text style={css.nav}>FEF</Text>
+                    </View> */}
+                    <ScrollView
+                        style={common.ScrollViewHasHeader}
+                        onMomentumScrollEnd={this._contentViewScroll.bind(this)}
+                    >
+                        {
+                            this.state.list.length == 0 ?
+                                <View style={[common.empty]}>
+                                    <Image style={common.emptyIcon} source={require('../../image/empty.png')} />
+                                    <Text style={common.emptyH1}>暂无记录</Text>
+                                </View> : null
+                        }
+                        {this.state.list.map((item, index) => {
+                            return (
+                                <View style={css.recordBlock} key={index}>
+                                    <View style={common.alignItemsB}>
+                                        <View style={common.alignItemsCenter}><Text style={[common.green, { marginRight: 10 }]}>提现</Text><Text>至{item.bank_name}（尾号{this.getStr(item.cash_order_card.card_number)}）</Text></View>
+                                        <Text>￥{item.total_money}</Text>
+                                    </View>
+                                    <Text style={css.time}>持卡人：{item.cash_order_card.realname}</Text>
+                                    <Text style={css.time}>提现状态：{item.statusName}</Text>
+                                    {item.remark != '' ? <Text style={css.time}>备注：{item.remark}</Text> : null}
+                                    <Text style={css.time}>提现时间：{item.create_time}</Text>
+                                </View>
+                            );
+                        })}
+
+                        {/* <View style={css.recordBlock}>
+                            <View style={common.alignItemsB}>
+                                <View style={common.alignItemsCenter}><Text style={[common.green,{marginRight:10}]}>提现</Text><Text>至银行卡（尾号1254）</Text></View>
+                                <Text>￥10000.00</Text>
+                            </View>
+                            <Text style={css.time}>2022/09/22 14:40:24</Text>
+                        </View>
+                        <View style={css.recordBlock}>
+                            <View style={common.alignItemsB}>
+                                <View style={common.alignItemsCenter}><Text style={[common.green,{marginRight:10}]}>提现</Text><Text>至银行卡（尾号1254）</Text></View>
+                                <Text>￥10000.00</Text>
+                            </View>
+                            <Text style={css.time}>2022/09/22 14:40:24</Text>
+                        </View> */}
+                    </ScrollView>
+
+                </View>
+            </View>
+        )
+    }
+}
+export default cashrecord;
