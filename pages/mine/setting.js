@@ -16,6 +16,7 @@ import {
     ImageBackground,
     Dimensions,
     Overlay,
+    Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getLogin, getLogout } from '../../network/authapi.js'
@@ -114,9 +115,14 @@ class setting extends React.Component {
                 <View style={[common.main,{marginTop:0}]}>
                     <TouchableOpacity onPress={() => { navigation.navigate('setloginpwd'); }} style={css.listBlock}><Text>修改登录密码</Text><Image style={common.more} source={require("../../img/more.png")} /></TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('setpaypwd'); }} style={css.listBlock}><Text>修改交易密码</Text><Image style={common.more} source={require("../../img/more.png")} /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => {Linking.openURL('https://hmmshop888.com/index.php?s=/index/app/treaty')}} style={[css.listBlock,{borderTopWidth:10}]}><Text>《用户协议》</Text><Image style={common.more} source={require("../../img/more.png")} /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => {Linking.openURL('https://hmmshop888.com/index.php?s=/index/app/policy')}} style={css.listBlock}><Text>《隐私政策》</Text><Image style={common.more} source={require("../../img/more.png")} /></TouchableOpacity>
                     <TouchableOpacity style={css.listBlock}><Text>当前版本</Text><Text>V{this.state.version}</Text></TouchableOpacity>
                     <TouchableOpacity onPress={this.logout.bind(this)} style={[css.linearBtn, { marginTop: 58, marginLeft: 15, width: width - 30 }]}>
                         <LinearGradient colors={['#F6BF0A', '#F3A316']} style={common.linearBtn} start={{ x: 1, y: 1 }} end={{ x: 0, y: 0 }}><Text style={common.linearBtnText}>退出登录</Text></LinearGradient>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{ navigation.navigate('cancelled')}} style={[css.linearBtn, { marginTop: 20, marginLeft: 15, width: width - 30 }]}>
+                        <LinearGradient colors={['#fff', '#fff']} style={common.linearBtn} start={{ x: 1, y: 1 }} end={{ x: 0, y: 0 }}><Text style={[common.linearBtnText,{color:'#F3A316'}]}>注销账号!</Text></LinearGradient>
                     </TouchableOpacity>
                 </View>
             </View>

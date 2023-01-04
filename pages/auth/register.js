@@ -15,6 +15,7 @@ import {
     ImageBackground,
     Dimensions,
     Overlay,
+    Linking,
 } from 'react-native';
 
 import { getregister, getPhoneCode } from '../../network/authapi.js'
@@ -44,6 +45,7 @@ class register extends React.Component {
         re_mobile: '',
         eye: 0,
         eye2: 0,
+        agree: 0,
     }
     componentDidMount() {
         // this.validate();
@@ -84,6 +86,9 @@ class register extends React.Component {
     // console.log('sdfasdas-----' + str)
     }
     submit() {
+        if(this.state.agree != 1){
+            Toast.show('请阅读并勾选协议', 2000);return;
+        }
         var that = this;
     // console.log(this.state.myvalidate)
     // console.log(this.state.validate)
@@ -168,7 +173,16 @@ class register extends React.Component {
                                 <Text style={css.itemText}>邀请码：</Text>
                                 <TextInput value={this.state.pid} onChangeText={(text) => { this.setState({ pid: text }) }} placeholder="请输入邀请码" placeholderTextColor={'#D4D4D4'} style={{ width: width, color: '#333333', fontSize: 15 }} />
                             </View>
-                            <TouchableOpacity onPress={this.submit.bind(this)} style={[css.linearBtn, { marginTop: 68, width: width - 68 }]}>
+                            <View style={[common.alignItemsCenter,{ marginTop: 68,}]}>
+                                <TouchableOpacity onPress={() => { this.setState({ agree: this.state.agree == 1 ? 0 : 1 }) }} style={css.remember}>
+                                    <Image style={this.state.agree == 1 ? css.tick : common.hidden} source={require("../../image/check-3.png")} />
+                                    <Image style={this.state.agree == 0 ? css.tick : common.hidden} source={require("../../image/uncheck-3.png")} />
+                                    <Text style={{ color: '#333333', fontSize: 15 }}>阅读并同意</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {Linking.openURL('https://hmmshop888.com/index.php?s=/index/app/treaty')}} style={[css.listBlock]}><Text style={{color:'#F6BF0A'}}>《用户协议》</Text></TouchableOpacity><Text>和</Text>
+                                <TouchableOpacity onPress={() => {Linking.openURL('https://hmmshop888.com/index.php?s=/index/app/policy')}} style={css.listBlock}><Text style={{color:'#F6BF0A'}}>《隐私政策》</Text></TouchableOpacity>
+                            </View>
+                            <TouchableOpacity onPress={this.submit.bind(this)} style={[css.linearBtn, { marginTop: 10, width: width - 68 }]}>
                                 <LinearGradient colors={['#F3A316', '#F6BF0A']} style={common.linearBtn} start={{ x: 1, y: 1 }} end={{ x: 0, y: 0 }}><Text style={common.linearBtnText}>确认</Text></LinearGradient>
                             </TouchableOpacity>
                         </View>

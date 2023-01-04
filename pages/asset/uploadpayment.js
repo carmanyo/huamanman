@@ -100,7 +100,7 @@ class forgetpwd extends React.Component{
 
 
 
-            fetch(`http://up-as0.qiniup.com/putb64/${this.fileSize(base64)}`, {
+            fetch(`https://up-as0.qiniup.com/putb64/${this.fileSize(base64)}`, {
                 method: "POST",
                 
                 headers: {
@@ -231,7 +231,7 @@ class forgetpwd extends React.Component{
         var fromData = {};
     // console.log('aaaaaa~~~~~~~~~~')
     // console.log(this.state.picKey)
-        fromData['pic'] = `http://qny.firefly888.com/${this.state.picKey}`;
+        fromData['pic'] = `https://qny.firefly888.com/${this.state.picKey}`;
         fromData['number'] = Number(this.props.route.params.num);
 
     // console.log(fromData)

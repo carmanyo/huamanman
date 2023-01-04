@@ -12,6 +12,7 @@ import Launch from './pages/home/launch';
 
 import home from './pages/home/index';
 import category from './pages/category/index'
+import categoryOld from './pages/category/indexOld'
 import orderIndex from './pages/order/index'
 import asset from './pages/asset/asset';
 // import pool from './pages/pool/pool';
@@ -171,6 +172,8 @@ import rule from './pages/mine/rule'
 import agreement from './pages/mine/agreement'
 // 排行榜
 import rank from './pages/mine/rank'
+// 注销
+import cancelled from './pages/mine/cancelled'
 
 
 
@@ -179,6 +182,22 @@ import rank from './pages/mine/rank'
 import register from './pages/auth/register'
 // 忘记密码
 import forgetpwd from './pages/auth/forgetpwd'
+// 本月预估收益
+import balanceMonth from './pages/asset/balanceMonth'
+// 实际到账手收益
+import balanceShiJi from './pages/asset/balanceShiJi'
+// 实际到账手收益
+import yongJinDetail from './pages/mine/yongJinDetail'
+// 佣金兑换积分
+import yongjinTojifen from './pages/mine/yongjinTojifen'
+// 佣金兑换积分 记录
+import yongjinTojifenRecord from './pages/mine/yongjinTojifenRecord'
+// 佣金转入余额
+import yongjinToyue from './pages/mine/yongjinToyue'
+// 佣金转入余额 记录
+import yongjinToyueRecord from './pages/mine/yongjinToyueRecord'
+// 详情
+import ordergoodsdetails from './pages/order/goodsdetails'
 
 
 
@@ -214,11 +233,13 @@ class Power extends Component{
                     {/* <Stack.Screen name='App' component={App} options={{headerShown:false}} /> */}
                     <Stack.Screen name='home' component={home} options={{headerShown:false}} />
                     <Stack.Screen name='category' component={category} options={{headerShown:false}} />
+                    <Stack.Screen name='categoryOld' component={categoryOld} options={{headerShown:false}} />
                     <Stack.Screen name='orderIndex' component={orderIndex} options={{headerShown:false}} />
                     <Stack.Screen name='asset' component={asset} options={{headerShown:false}} />
                     {/* <Stack.Screen name='pool' component={pool} options={{headerShown:false}} /> */}
                     <Stack.Screen name='mine' component={mine} options={{headerShown:false}} />
                     <Stack.Screen name='login' component={login} options={{headerShown:false}} />
+                    <Stack.Screen name='cancelled' component={cancelled} options={{headerShown:false}} />
 
                     <Stack.Screen name='search' component={search} options={{headerShown:false}} />
                     <Stack.Screen name='orderWaitPay' component={orderWaitPay} options={{headerShown:false}} />
@@ -246,6 +267,14 @@ class Power extends Component{
                     <Stack.Screen name='rule' component={rule} options={{headerShown:false}} />
                     <Stack.Screen name='agreement' component={agreement} options={{headerShown:false}} />
                     <Stack.Screen name='rank' component={rank} options={{headerShown:false}} />
+                    <Stack.Screen name='balanceMonth' component={balanceMonth} options={{headerShown:false}} />
+                    <Stack.Screen name='balanceShiJi' component={balanceShiJi} options={{headerShown:false}} />
+                    <Stack.Screen name='yongJinDetail' component={yongJinDetail} options={{headerShown:false}} />
+                    <Stack.Screen name='yongjinTojifen' component={yongjinTojifen} options={{headerShown:false}} />
+                    <Stack.Screen name='yongjinTojifenRecord' component={yongjinTojifenRecord} options={{headerShown:false}} />
+                    <Stack.Screen name='yongjinToyue' component={yongjinToyue} options={{headerShown:false}} />
+                    <Stack.Screen name='yongjinToyueRecord' component={yongjinToyueRecord} options={{headerShown:false}} />
+                    <Stack.Screen name='ordergoodsdetails' component={ordergoodsdetails} options={{headerShown:false}} />
 
 
 

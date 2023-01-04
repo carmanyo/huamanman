@@ -11,7 +11,7 @@
         {
             "name": "Travis Tidwell",
             "email": "travis@form.io",
-            "url": "http://github.com/travist"
+            "url": "https://github.com/travist"
         },
         {
             "name": "Antonio",
@@ -22,13 +22,13 @@
             "url": "https://github.com/jmgaya"
         }
     ],
-    "homepage": "http://www.travistidwell.com/jsencrypt",
+    "homepage": "https://www.travistidwell.com/jsencrypt",
     "repository": {
         "type": "git",
         "url": "git://github.com/lsxlsxxslxsl/encryptlong.git"
     },
     "bugs": {
-        "url": "http://github.com/lsxlsxxslxsl/encryptlong/issues"
+        "url": "https://github.com/lsxlsxxslxsl/encryptlong/issues"
     },
     "keywords": [
         "encrypt",

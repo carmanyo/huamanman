@@ -132,7 +132,7 @@ function b64tohex(s) {
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+License at https://www.apache.org/licenses/LICENSE-2.0
 
 THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
@@ -3258,7 +3258,7 @@ function removeDigestHeader(str) {
 /*!
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
+https://developer.yahoo.com/yui/license.html
 version: 2.9.0
 */
 var YAHOO = {};
@@ -5006,7 +5006,7 @@ var JSEncryptRSAKey = /** @class */ (function (_super) {
      *   publicExponent    INTEGER   -- e
      * }
      * it's possible to examine the structure of the keys obtained from openssl using
-     * an asn.1 dumper as the one used here to parse the components: http://lapo.it/asn1js/
+     * an asn.1 dumper as the one used here to parse the components: https://lapo.it/asn1js/
      * @argument {string} pem the pem encoded string, can include the BEGIN/END header/footer
      * @private
      */

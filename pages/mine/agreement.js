@@ -73,7 +73,7 @@ class infodetails extends React.Component {
         let { navigation } = this.props;
         let { item } = this.props;
         let detail = this.state.detail;
-        let html = `<p style="text-align: center;"><a href="http://jsdf.co">&hearts; nice job!</a></p>`
+        let html = `<p style="text-align: center;"><a href="https://jsdf.co">&hearts; nice job!</a></p>`
         return (
             <View style={common.body}>
                 {/* 头部 */}

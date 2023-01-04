@@ -56,9 +56,7 @@ class page extends React.Component {
         let { navigation } = this.props;
         var fromData = {};
         getStatisticsData(fromData, res => {
-        // console.log(res)
             if (res.code == 1) {
-            // console.log(res.data)
                 this.setState({
                     list: res.data
                 })

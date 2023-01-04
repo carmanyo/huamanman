@@ -223,14 +223,13 @@ class page extends React.Component {
                                     </View>
                                     {this.state.pay_type == 3 ? <Image source={require('../../image/tick.png')} style={common.payTick} /> : null}
                                 </TouchableOpacity>
-                                <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 40)}>
+                                {/* <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 40)}>
                                     <View style={common.alignItemsCenter}>
                                         <Image source={require('../../image/pi-2.jpg')} style={common.payIcon} />
                                         <Text style={common.payStrong}>Pi支付</Text>
-                                        {/* <Text style={common.paySpan}>（尾号0245）</Text> */}
                                     </View>
                                     {this.state.pay_type == 40 ? <Image source={require('../../image/tick.png')} style={common.payTick} /> : null}
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                                 <TouchableOpacity style={[common.payLi, common.hasBottomBoder]} onPress={this.changePayType.bind(this, 10)}>
                                     <View style={common.alignItemsCenter}>
                                         <Image source={require('../../image/yue.png')} style={common.payIcon} />
@@ -341,7 +340,7 @@ class page extends React.Component {
                     that.getUserOrderDetails()
                     Linking.openURL(res.data.payment)
                 }
-                // 微信
+                // 微信 
                 if (this.state.pay_type == 20) {
                     navigation.navigate('orderIndex')
                     Linking.openURL(res.data.payment)

@@ -52,7 +52,7 @@ import App from '../../App'
 import ToastExample from './ToastExample';
 import loadingImage from '../../img/lo.gif';
 import Geolocation from 'react-native-geolocation-service';
-// import Barcode from 'react-native-smart-barcode';
+import Barcode from 'react-native-smart-barcode';
 import HTMLView from 'react-native-htmlview';
 // import * as WeChat from 'react-native-wechat';
 
@@ -102,7 +102,7 @@ export default class home extends Component {
                     <View style={common.headerTitle}><Text style={common.headerTitleText}>扫码</Text></View>
                 </View>
 
-                {/* <Barcode style={{ flex: 1, }} ref={component => this._barCode = component} onBarCodeRead={this._onBarCodeRead} /> */}
+                <Barcode style={{ flex: 1, }} ref={component => this._barCode = component} onBarCodeRead={this._onBarCodeRead} />
             </View>
             : null;
 
@@ -735,9 +735,9 @@ export default class home extends Component {
         }
 
         let url = '';
-        let webUrl = `http://uri.amap.com/navigation?to=${lon},${lat},${name}&mode=bus&coordinate=gaode`;
-        let webUrlGaode = `http://uri.amap.com/navigation?to=${lon},${lat},${name}&mode=bus&coordinate=gaode`;
-        let webUrlBaidu = `http://api.map.baidu.com/direction?destination=latlng:${lat},${lon}|name=${name}&mode=transit&coord_type=gcj02&output=html&src=mybaoxiu|wxy`;
+        let webUrl = `https://uri.amap.com/navigation?to=${lon},${lat},${name}&mode=bus&coordinate=gaode`;
+        let webUrlGaode = `https://uri.amap.com/navigation?to=${lon},${lat},${name}&mode=bus&coordinate=gaode`;
+        let webUrlBaidu = `https://api.map.baidu.com/direction?destination=latlng:${lat},${lon}|name=${name}&mode=transit&coord_type=gcj02&output=html&src=mybaoxiu|wxy`;
 
         url = webUrl;
         if (Platform.OS == 'android') {//android
@@ -801,7 +801,7 @@ export default class home extends Component {
         // console.log('getCity-------3')
         var that = this;
         //访问网络开始
-        fetch('http://restapi.amap.com/v3/geocode/regeo?key=3be5718d299c29e72fced80f03514b90&location=' + longitude + ',' + latitude + '&radius=1000&extensions=all&batch=false&roadlevel=0', {
+        fetch('https://restapi.amap.com/v3/geocode/regeo?key=3be5718d299c29e72fced80f03514b90&location=' + longitude + ',' + latitude + '&radius=1000&extensions=all&batch=false&roadlevel=0', {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

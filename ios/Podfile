@@ -1,11 +1,7 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-source 'https://github.com/CocoaPods/Specs.git'
-
-platform :ios, '12.0.0'
-
-# use_frameworks!
+platform :ios, '10.0'
 
 target 'app' do
   config = use_native_modules!
@@ -20,38 +16,24 @@ target 'app' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
-  # pod 'react-native-location', :path => '../node_modules/react-native-location'
+  pod 'react-native-location', :path => '../node_modules/react-native-location'
 
-  # pod 'react-native-amap-geolocation', :path => '../node_modules/react-native-amap-geolocation'
-
-  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
+  pod 'react-native-amap-geolocation', :path => '../node_modules/react-native-amap-geolocation'
 
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
-  # use_unimodules!
-
-  # react-native-cli autolinking
-  use_native_modules!
-
-
-
-
-
-  # use_unimodules!
-
-  # use_native_modules!
-  # target 'appTests' do
-  #   inherit! :complete
-  #   # Pods for testing
-  # end
+  target 'appTests' do
+    inherit! :complete
+    # Pods for testing
+  end
 
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable the next line.
-  # use_flipper!()
+  use_flipper!()
 
-  # post_install do |installer|
-  #   react_native_post_install(installer)
-  # end
+  post_install do |installer|
+    react_native_post_install(installer)
+  end
 end

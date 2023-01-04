@@ -43,6 +43,7 @@
     "react-native-restart": "^0.0.24",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.4.0",
+    "react-native-smart-barcode": "^1.0.6",
     "react-native-splash-screen": "^3.2.0",
     "react-native-svg": "^12.1.1",
     "react-native-swiper": "^1.6.0-nightly.5",
