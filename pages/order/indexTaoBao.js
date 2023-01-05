@@ -32,7 +32,7 @@ import Swiper from 'react-native-swiper';
 import { MarqueeHorizontal, MarqueeVertical } from 'react-native-marquee-ab';
 import DeviceInfo from 'react-native-device-info';
 
-import { getMerchantCategoryIndex, getMerchantIndex, getbanner, getvideoNum, getCompleteAdv, getVersions, getnoticepopup, getCategory, getGoodsList } from '../../network/authapi.js'
+import { getMerchantCategoryIndex, getMerchantListss, getTbList, getDataokeGoodsIndex, getCompleteAdv, getVersions, getnoticepopup, getCategory, getGoodsList } from '../../network/authapi.js'
 const Toast = Overlay.Toast;
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -56,6 +56,7 @@ export default class home extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            tabList: [],
             storeList: [],
             imgArr: [],
             catList: [],
@@ -73,12 +74,70 @@ export default class home extends Component {
     //获取权限
     componentDidMount() {
         var that = this;
-        that.getCategorys()
+        // that.getCategorys();
+        that.getTbLists();
         that.setState({
             // over:true,
             version: DeviceInfo.getVersion()
         }, ()=>{
             that.version()
+        })
+    }
+
+    // 淘宝分类
+    getTbLists() {
+        var that = this;
+        let { navigation } = this.props;
+        var fromData = {};
+        getTbList(fromData, res => {
+            // console.log('淘宝分类')
+        // console.log(res)
+            if (res.code == 1) {
+                if (res.data.length > 0) {
+                    that.setState({
+                        dataType: res.data[0].cid,
+                        category_id: res.data[0].cid,
+                        tabList: res.data,
+                    },()=>{
+                        that.getGoodsLists();
+                    })
+                }
+            }
+        })
+    }
+
+    // 商品列表
+    getGoodsLists() {
+        var that = this;
+        let { navigation } = this.props;
+        var fromData = {};
+        fromData['cids'] = this.state.category_id;
+        // fromData['page'] = this.state.isRefreshing ? 1 : this.state.page;
+        fromData['pageId'] = this.state.isRefreshing ? 1 : this.state.page;
+        fromData['search'] = this.state.inputValue;
+        getDataokeGoodsIndex(fromData, res => {
+        // console.log(res)
+            if (res.code == 1) {
+                if (res.data.list.length > 0) {
+                    this.setState({
+                        goodsList: this.state.goodsList.concat(res.data.list),
+                    })
+                }
+            }
+        })
+    }
+
+    // 切换导航
+    tabClick(dataType) {
+        // console.log(dataType)
+        if (dataType == this.state.dataType) { return }
+        var that = this;
+        that.setState({
+            dataType,
+            category_id:dataType,
+            goodsList: [],
+        }, ()=>{
+            that.getGoodsLists()
         })
     }
 
@@ -88,7 +147,6 @@ export default class home extends Component {
         let { navigation } = this.props;
         var fromData = {};
         getMerchantCategoryIndex(fromData, res => {
-        // console.log('res------')
         // console.log(res)
             if (res.code == 1) {
                 if (res.data.length > 0) {
@@ -109,7 +167,7 @@ export default class home extends Component {
         })
     }
     updateList(value){
-        // console.log(value)
+        console.log(value)
         var that = this;
         that.setState({
             inputValue:value,
@@ -128,69 +186,47 @@ export default class home extends Component {
         Keyboard.dismiss();
         that.setState({
             page: 1,
-            storeList: [],
+            goodsList: [],
         }, that.getGoodsLists())
     }
     changeCat(category_id) {
         var that = this;
         that.setState({
             category_id: category_id,
-            page: 1,
+            // page: 1,
             storeList: [],
             // inputValue: '',
         },()=>{
-            that.getGoodsLists()
+            that.getGoodsListsBy(category_id)
         })
     }
 
     // 商品列表
-    // getGoodsListsBy(category_id) {
-    //     var that = this;
-    //     let { navigation } = this.props;
-    //     var fromData = {};
-    //     fromData['category_id'] = category_id;
-    //     // fromData['page'] = this.state.isRefreshing ? 1 : this.state.page;
-    //     fromData['search'] = this.state.inputValue;
-
-    //     getMerchantIndex(fromData, res => {
-    //         // console.log(res)
-    //         if (res.code == 1) {
-    //             if (res.data.list.length > 0) {
-    //                 this.setState({
-    //                     storeList: res.data.list,
-    //                 })
-    //             }
-    //         }
-    //     })
-    // }
-
-    // 商品列表
-    getGoodsLists() {
+    getGoodsListsBy(category_id) {
         var that = this;
         let { navigation } = this.props;
         var fromData = {};
-        fromData['category_id'] = this.state.category_id;
+        fromData['category_id'] = category_id;
         // fromData['page'] = this.state.isRefreshing ? 1 : this.state.page;
-        fromData['page'] = this.state.page;
         fromData['search'] = this.state.inputValue;
-        getMerchantIndex(fromData, res => {
-        // console.log(fromData)
-        // console.log(res)
+
+        getMerchantListss(fromData, res => {
+            // console.log(res)
             if (res.code == 1) {
-                if (res.data.list.data.length > 0) {
+                if (res.data.list.length > 0) {
                     this.setState({
-                        storeList: this.state.storeList.concat(res.data.list.data),
+                        storeList: res.data.list,
                     })
                 }
             }
         })
     }
 
+    
+
     // 刷新
     refresh() {
         this.setState({
-            page:1,
-            storeList:[],
             isRefreshing: true,
         }, this.getCategorys())
     }
@@ -240,17 +276,17 @@ export default class home extends Component {
 
     // 分页
     _contentViewScroll(e) {
+        var that = this;
         // Toast.show('到底啦')
         var offsetY = e.nativeEvent.contentOffset.y; //滑动距离
         var contentSizeHeight = e.nativeEvent.contentSize.height; //scrollView contentSize高度
         var oriageScrollHeight = e.nativeEvent.layoutMeasurement.height; //scrollView高度
-        // if (offsetY + oriageScrollHeight >= contentSizeHeight) {
         if (parseInt(offsetY + oriageScrollHeight) >= parseInt(contentSizeHeight)) {
             // Console.log('上传滑动到底部事件')
-            this.setState({
+            that.setState({
                 page: this.state.page + 1,
             }, ()=>{
-                this.getGoodsLists()
+                that.getGoodsLists()
             })
 
         }
@@ -334,13 +370,27 @@ export default class home extends Component {
                 {ifupdate}
                 {/* 头部 */}
                 <View style={[common.headerNoBorder]}>
-                    <View style={common.headerTitle}><Text style={common.headerTitleText}>本地生活</Text></View>
+                    <View style={common.headerTitle}><Text style={common.headerTitleText}>返佣精选</Text></View>
                 </View>
-                {this.state.catList.length != 0 ?
-                    <ScrollView style={[common.ScrollView, common.hasHeader]}
+                {this.state.tabList.length != 0 ?
+                    <View style={[common.ScrollView, common.hasHeader]}
                     >
+                        <View style={[css.catWrap2,{}]}>
+                            <TouchableOpacity onPress={() => { navigation.navigate('categoryOld', { category_id: item.category_id }); }} style={css.cats} horizontal={true} contentContainerStyle={{ alignItems: 'center' }} showsHorizontalScrollIndicator={false}>
+                                <Image style={css.catIcon} source={require('../../image/taobao.png')} /><Text style={css.catText}>淘宝返现</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => { navigation.navigate('categoryOld', { category_id: item.category_id }); }} style={css.cats} horizontal={true} contentContainerStyle={{ alignItems: 'center' }} showsHorizontalScrollIndicator={false}>
+                                <Image style={css.catIcon} source={require('../../image/jd.png')} /><Text style={css.catText}>京东返现</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => { navigation.navigate('categoryOld', { category_id: item.category_id }); }} style={css.cats} horizontal={true} contentContainerStyle={{ alignItems: 'center' }} showsHorizontalScrollIndicator={false}>
+                                <Image style={css.catIcon} source={require('../../image/pdd.png')} /><Text style={css.catText}>拼多多返现</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => { navigation.navigate('categoryOld', { category_id: item.category_id }); }} style={css.cats} horizontal={true} contentContainerStyle={{ alignItems: 'center' }} showsHorizontalScrollIndicator={false}>
+                                <Image style={css.catIcon} source={require('../../image/douyin.png')} /><Text style={css.catText}>抖音返现</Text>
+                            </TouchableOpacity>
+                        </View> 
                         {/* 搜索 */}
-                        <View style={[common.alignItemsCenter, css.searchWrap, catCss.searchWrap]}>
+                        <View style={[common.alignItemsCenter, css.searchWrap, catCss.searchWrap,{width:width-32}]}>
                             <View style={common.alignItemsCenter}>
                                 <Image style={css.searchIcon} source={require('../../image/search.png')} />
                                 <TextInput
@@ -349,14 +399,99 @@ export default class home extends Component {
                                     onChange={(event) => this.updateList(
                                         event.nativeEvent.text
                                      )}
-                                    value={this.state.inputValue} style={css.textInput} placeholder='请输入店铺名称'
+                                    value={this.state.inputValue} style={css.textInput} placeholder='请输入商品名称'
                                 />
                             </View>
                             <TouchableOpacity onPress={this.search.bind(this)} style={css.searchBtn}>
                                 <Text style={[css.searchText]}>搜索</Text>
                             </TouchableOpacity>
                         </View>
+                        <View style={[common.navRowScrollView, { width: width,marginTop:15 }]} horizontal={true} contentContainerStyle={{ alignItems: 'center' }} showsHorizontalScrollIndicator={false}>
+                            <View style={[common.navRowWrap, { justifyContent: 'space-between', width: width, paddingRight: 25 }]} horizontal={true}>
+                                {
+                                    this.state.tabList.map((item, index) => {
+                                        return (
+                                            <TouchableOpacity onPress={this.tabClick.bind(this, item.cid)} key={item.cid}><Text style={[common.navRowBlock, this.state.dataType == item.cid ? common.navRowActive : null]}>{item.cname}</Text></TouchableOpacity>
+                                        )
+                                    })
+                                }
+                            </View>
+                        </View>
                         <View style={[catCss.content]}>
+                            <ScrollView
+                                style={[catCss.contentLeft,{width:width,height:height - height/2.9,}]}
+                                showsVerticalScrollIndicator={false}
+                                onMomentumScrollEnd={this._contentViewScroll.bind(this)}
+                            >
+                                {/* {
+                                    this.state.catList.map((item, index) => {
+                                        return (
+                                            <TouchableOpacity onPress={this.changeCat.bind(this, item.category_id)} key={index}><Text style={[catCss.catText, this.state.category_id == item.category_id ? catCss.catTextActive : null]}>{item.name}</Text></TouchableOpacity>
+                                        )
+                                    })
+                                } */}
+                                <View style={[css.goodsWrap, { marginTop: 0 }]}>
+                                    {
+                                        this.state.goodsList.map((item, index) => {
+                                            return (
+                                                <TouchableOpacity onPress={() => { navigation.navigate('ordergoodsdetails', { id: item.id }) }} style={css.goodsBlock} key={index}>
+                                                    <Image onError={(e)=>{
+                                                        console.log('wwwwwwwwww-------------错误')
+                                                        console.log(item.goods_image)
+                                                        console.log(e)
+                                                    }} style={[css.goodsImage,{width:159,height:159}]} 
+                                                    source={{ uri: item.mainPic, cache: "force-cache" }} 
+                                                    resizeMode='center' resizeMethod='resize'/>
+                                                   <Text style={css.goodsName}>{item.title}</Text>
+                                                   {
+                                                    item.monthSales>10000?
+                                                    <View style={{width:'100%',marginTop:5}}><Text style={{color:'#999',fontSize:12}}>{(item.monthSales/10000).toFixed(0)}万+人已购</Text></View>
+                                                    :<View style={{width:'100%',marginTop:5}}><Text style={{color:'#999',fontSize:12}}>{item.monthSales}人已购</Text></View>
+                                                   }
+                                                   
+                                                   <View style={common.alignItemsCenter}>
+                                                        <View style={css.goodsSku2}><Text style={[{backgroundColor:'#F3A316',color:'#fff',paddingLeft:2,paddingRight:2}]}>返</Text><Text style={{color:'#F3A316',fontSize:12,paddingLeft:6,paddingRight:6}}>{item.rakeBack}</Text></View>
+                                                        
+                                                    </View>
+                                                    <View style={[common.alignItemsB,{width:'100%'}]}>
+                                                        <View style={common.alignItemsCenter}>
+                                                            <Text style={css.sPrice}>到手价：￥</Text>
+                                                            <Text style={css.bPrice}>{item.actualPrice}</Text>
+                                                        </View>
+                                                        <Text style={{color:'#999',fontSize:12,textDecorationLine:'line-through',}}>￥{item.originalPrice}</Text>
+                                                        {/* <View style={common.alignItemsCenter}>
+                                                            <Text style={{color:'#999',fontSize:12}}>原价：</Text>
+                                                            <Text style={{color:'#999',fontSize:12}}>{item.originalPrice}</Text>
+                                                        </View> */}
+                                                    </View>
+                                                    {/* <Image style={css.dotIcon} source={require('../../image/dot.png')} /> */}
+                                                    {/* <View style={common.alignItemsCenter}>
+                                                        <Text style={css.goodsSku}>{item.discount}</Text>
+                                                    </View>
+
+                                                     <View style={common.alignItemsCenter}>
+                                                        <Text style={css.goodsSku}>立送≈价值{item.rebate}元积分</Text>
+                                                    </View>
+                                                    <View>
+                                                        <View style={common.alignItemsCenter}>
+                                                            <Text style={css.sPrice}>￥</Text>
+                                                            <Text style={css.bPrice}>{item.goods_sku.goods_price}</Text>
+                                                        </View>
+                                                        {
+                                                            item.goods_sku.goods_coupon != 0 ? <Text style={css.sPrice}>劵可抵：{item.goods_sku.goods_coupon}元</Text> : null
+                                                        }
+
+                                                    </View>
+                                                    <Image style={css.dotIcon} source={require('../../image/dot.png')} /> */}
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </View>
+                                <View style={{height:50}}></View>
+                            </ScrollView>
+                        </View>
+                        {/* <View style={[catCss.content]}>
                             <ScrollView
                                 style={[catCss.contentLeft,{}]}
                                 showsVerticalScrollIndicator={false}
@@ -370,8 +505,6 @@ export default class home extends Component {
                                 }
                             </ScrollView>
                             <ScrollView style={[catCss.contentRight,{}]} showsVerticalScrollIndicator={false} onMomentumScrollEnd={this._contentViewScroll.bind(this)}>
-                                {/* <Image style={catCss.catBanner} source={require('../../image/catbanner.png')} /> */}
-                                {/* <Text style={catCss.catTittle}>推荐商品</Text> */}
                                 <View style={[catCss.goodsWrap]}>
                                     {this.state.storeList.map((item, index) => {
                                         return (
@@ -381,11 +514,9 @@ export default class home extends Component {
                                                     <TouchableOpacity onPress={() => { navigation.navigate('shop', { id: item.merchant_id }) }}><Text style={[css.storeName,{width: width / 2.5}]}>{item.merchant_name}</Text></TouchableOpacity>
                                                     <TouchableOpacity onPress={() => { return Linking.openURL('tel:' + item.phone); }} style={[common.alignItemsCenter, { marginTop: 5, }]}><Image style={css.storeIcon} source={require('../../image/call.png')} /><Text style={{ color: '#808080' }}>{item.phone}</Text></TouchableOpacity>
                                                     <TouchableOpacity onPress={this.turn2MapApp.bind(this, item.longitude, item.latitude, 'gaode', item.province.name + item.city.name + item.region.name + item.address)} style={[common.alignItemsB, { marginTop: 5 }]}>
-                                                        {/* <TouchableOpacity style={[common.alignItemsB, { marginTop: 10 }]}> */}
                                                         <View style={common.alignItemsCenter}><Image style={css.storeIcon} source={require('../../image/daohang.jpg')} />
                                                             <Text style={{ color: '#808080', width: width / 2.5 }}>{item.province.name}{item.city.name}{item.region.name}{item.address}</Text>
                                                         </View>
-                                                        {/* <Text style={{ color: '#808080' }}>{item.distance_unit}</Text> */}
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>
@@ -402,28 +533,22 @@ export default class home extends Component {
                                     }
                                 </View>
                             </ScrollView>
-                        </View>
+                        </View> */}
 
-                    </ScrollView>
-                    : 
-                    <View style={[common.empty,{width:width,paddingBottom:150}]}>
-                        <Image style={common.emptyIcon} source={require('../../image/empty2.png')} />
-                        <Text style={common.emptyH1}>暂无店铺</Text>
-                        <Text style={common.emptyP}>敬请期待~</Text>
                     </View>
-                    }
+                    : null}
                 <View style={common.navBar}>
                     <TouchableOpacity onPress={() => { navigation.navigate('home') }} style={common.navBarBlock}>
                         <Image style={common.navBarIcon} source={require('../../image/tabbar-1.png')} />
                         <Text style={[common.navBarText]}>首页</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('category') }} style={common.navBarBlock}>
-                        <Image style={common.navBarIcon} source={require('../../image/tabbar-2-s.png')} />
-                        <Text style={[common.navBarText, { color: '#F3A316' }]}>本地生活</Text>
+                        <Image style={common.navBarIcon} source={require('../../image/tabbar-2.png')} />
+                        <Text style={[common.navBarText]}>本地生活</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('orderIndex') }} style={common.navBarBlock}>
-                        <Image style={common.navBarIcon} source={require('../../image/tabbar-3.png')} />
-                        <Text style={common.navBarText}>订单</Text>
+                        <Image style={common.navBarIcon} source={require('../../image/tabbar-3-s.png')} />
+                        <Text style={[common.navBarText, { color: '#F3A316' }]}>返佣精选</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('mine') }} style={common.navBarBlock}>
                         <Image style={common.navBarIcon} source={require('../../image/tabbar-4.png')} />

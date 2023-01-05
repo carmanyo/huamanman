@@ -17,7 +17,7 @@ import {
     Overlay,
 } from 'react-native';
 
-import { getcashRecord, getUserDetail } from '../../network/authapi.js'
+import { getcashRecord, getUserDetail,getConfig } from '../../network/authapi.js'
 const Toast = Overlay.Toast;
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -33,11 +33,28 @@ class cashrecord extends React.Component {
             user: {},
             userCoin: {},
             userInfo: {},
+            balanceOpen: 0,
         }
     }
     componentDidMount() {
+        this.getConfigs();
         this.getUserDetails();
     }
+
+    // 是否显示兑换按钮
+    getConfigs() {
+        var that = this;
+        let { navigation } = this.props;
+        var fromData = {};
+        getConfig(fromData, res => {
+            if (res.code == 1) {
+                this.setState({
+                    balanceOpen:Number(res.data.setting.balance_open.value)
+                })
+            }
+        })
+    }
+
     getUserDetails() {
         var that = this;
         let { navigation } = this.props;
@@ -75,7 +92,7 @@ class cashrecord extends React.Component {
                     <TouchableOpacity onPress={() => { navigation.goBack(); }} style={common.headerLeft}>
                         <Image source={require('../../image/return.png')} style={common.returnIcon} />
                     </TouchableOpacity >
-                    <View style={common.headerTitle}><Text style={common.headerTitleText}>余额</Text></View>
+                    <View style={common.headerTitle}><Text style={common.headerTitleText}>实际到账佣金</Text></View>
                 </View>
 
                 <View style={[common.main]}>
@@ -86,14 +103,21 @@ class cashrecord extends React.Component {
                             contentContainerStyle={{ alignItems: 'center' }}
                         >
                             <Image source={require('../../image/balance.png')} style={css.jifen} />
-                            <Text style={css.can}>当前可用余额</Text>
-                            <Text style={css.strong}>{this.state.userCoin.money}</Text>
-                            <TouchableOpacity onPress={() => { navigation.navigate('cash') }} style={[css.linearBtn, { marginTop: 58, marginLeft: 15, width: 202, marginLeft: 0 }]}>
-                                <LinearGradient colors={['#F6BF0A', '#F3A316']} style={common.linearBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={common.linearBtnText}>提现</Text></LinearGradient>
+                            <Text style={css.can}>实际到账佣金</Text>
+                            <Text style={css.strong}>{this.state.userCoin.balance}</Text>
+                            <TouchableOpacity onPress={() => { navigation.navigate('yongjinTojifen') }} style={[css.linearBtn, { marginTop: 58, marginLeft: 15, width: 202, marginLeft: 0 }]}>
+                                <LinearGradient colors={['#F6BF0A', '#F3A316']} style={common.linearBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={common.linearBtnText}>兑换积分</Text></LinearGradient>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { navigation.navigate('detail') }}>
+                            {
+                                this.state.balanceOpen==1?
+                                <TouchableOpacity onPress={() => { navigation.navigate('yongjinToyue') }} style={[css.linearBtn, { marginTop: 20, marginLeft: 15, width: 202, marginLeft: 0 }]}>
+                                    <LinearGradient colors={['#fff', '#fff']} style={[common.linearBtn,{borderWidth:1,borderColor:'#F3A316'}]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={[common.linearBtnText,{color:'#F3A316',lineHeight:37}]}>转入可用余额</Text></LinearGradient>
+                                </TouchableOpacity>:null
+                            }
+                            
+                            {/* <TouchableOpacity onPress={() => { navigation.navigate('detail') }}>
                                 <Text style={css.detail}>查看余额明细</Text>
-                            </TouchableOpacity >
+                            </TouchableOpacity > */}
                         </ScrollView>
                         : null} 
                 </View>

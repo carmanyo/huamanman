@@ -40,7 +40,7 @@ const Toast = Overlay.Toast;
 // import common from '../../css/common.js'
 // import css from '../../css/orderIndex.js'
 // import ca from '../../css/orderWaitPay.js'
-// import Barcode from 'react-native-smart-barcode'
+import Barcode from 'react-native-smart-barcode'
 import common from '../../css/common.js'
 import css from '../../css/index.js'
 import {getScanCode } from '../../network/authapi.js'
@@ -66,7 +66,7 @@ class page extends React.Component {
                     <View style={common.headerTitle}><Text style={common.headerTitleText}>扫码{this.state.viewAppear}</Text></View>
                 </View>
                 {/* <Barcode style={{ flex: 1, }} ref={component => this._barCode = component} onBarCodeRead={this._onBarCodeRead} /> */}
-                {/* {this.state.viewAppear ? <Barcode style={{ flex: 1, }} ref={component => this._barCode = component} onBarCodeRead={this._onBarCodeRead} /> : null} */}
+                {this.state.viewAppear ? <Barcode style={{ flex: 1, }} ref={component => this._barCode = component} onBarCodeRead={this._onBarCodeRead} /> : null}
             </View>
         )
     }
@@ -106,6 +106,7 @@ class page extends React.Component {
             // Toast.show("You can use the camera")
             that.setState({ viewAppear: true })
         } else {
+            this.requestCameraPermission2()
             // console.log("Camera permission denied")
             Toast.show('请在设备设置中启用摄像头权限')
             setTimeout(() => {
@@ -144,6 +145,21 @@ class page extends React.Component {
         //     this.props.navigation.addListener('didfocus', viewAppearCallBack)
         // ]
         // RNRestart.Restart();
+    }
+    requestCameraPermission2() {
+        var that = this;
+        PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            {
+                title: '权限',
+                message: '启用摄像头权限',
+            },
+        ).then((res) => {
+            that.setState({
+                camera: res
+            })
+            // console.log(res);
+        });
     }
 
     showScan() {

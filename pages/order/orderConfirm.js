@@ -167,14 +167,13 @@ class page extends React.Component {
                                     </View>
                                     {this.state.pay_type == 25 ? <Image source={require('../../image/tick.png')} style={common.payTick} /> : null}
                                 </TouchableOpacity>
-                                <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 40)}>
+                                {/* <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 40)}>
                                     <View style={common.alignItemsCenter}>
                                         <Image source={require('../../image/pi-2.jpg')} style={common.payIcon} />
                                         <Text style={common.payStrong}>Pi支付</Text>
-                                        {/* <Text style={common.paySpan}>（尾号0245）</Text> */}
                                     </View>
                                     {this.state.pay_type == 40 ? <Image source={require('../../image/tick.png')} style={common.payTick} /> : null}
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                                 <TouchableOpacity style={[common.payLi, common.hasBottomBoder]} onPress={this.changePayType.bind(this, 10)}>
                                     <View style={common.alignItemsCenter}>
                                         <Image source={require('../../image/yue.png')} style={common.payIcon} />
@@ -313,7 +312,8 @@ class page extends React.Component {
         fromData['is_check'] = this.state.is_check;
     // console.log(fromData)
         getBuyNowPost(fromData, res => {
-        // console.log(res)
+        console.log('dddd')
+        console.log(res)
             if (res.code == 1) {
                 // 余额
                 if (this.state.pay_type == 10) {
@@ -329,6 +329,7 @@ class page extends React.Component {
                 }
                 // 微信
                 if (this.state.pay_type == 20) {
+                    // Toast.show('微信');
                     navigation.navigate('orderIndex')
                     Linking.openURL(res.data.payment)
                 }

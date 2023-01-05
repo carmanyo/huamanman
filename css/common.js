@@ -528,6 +528,13 @@ var common = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    linearBtn2: {
+        borderRadius: 6,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     linearBtnText: {
         color: '#fff',
         textAlign: 'center',
@@ -1010,8 +1017,8 @@ var common = StyleSheet.create({
         height: 21,
         zIndex: 9,
     },
-    aaa: {
-
+    mineFun: {
+        width:'33.3%',
     },
     aaa: {
 

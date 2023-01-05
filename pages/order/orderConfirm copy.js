@@ -183,13 +183,13 @@ class page extends React.Component {
                                     </View>
                                     {this.state.pay_type == 15 ? <Image source={require('../../image/tick.png')} style={common.payTick} /> : null}
                                 </TouchableOpacity>
-                                <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 20)}>
+                                {/* <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 20)}>
                                     <View style={common.alignItemsCenter}>
                                         <Image source={require('../../image/wechat.png')} style={common.payIcon} />
                                         <Text style={common.payStrong}>微信</Text>
                                     </View>
                                     {this.state.pay_type == 20 ? <Image source={require('../../image/tick.png')} style={common.payTick} /> : null}
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                                 <TouchableOpacity style={common.payLi} onPress={this.changePayType.bind(this, 25)}>
                                     <View style={common.alignItemsCenter}>
                                         <Image source={require('../../image/card.png')} style={common.payIcon} />

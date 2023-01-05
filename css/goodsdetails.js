@@ -132,11 +132,18 @@ var css = StyleSheet.create({
     height:18,
     marginRight:5,
   },
-  aaa:{
-
+  back:{
+    backgroundColor:'#F6BF0A',
+    borderRadius:4,
+    padding:4,
   },
-  aaa:{
-
+  store:{
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    padding:20,
+    borderTopWidth:10,
+    borderColor:'#f5f5f5',
   },
   aaa:{
 

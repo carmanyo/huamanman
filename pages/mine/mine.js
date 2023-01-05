@@ -23,6 +23,7 @@ import {
     InteractionManager,
     Button,
     PermissionsAndroid,
+    RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Utils from '../../utils/Util';
@@ -127,7 +128,19 @@ export default class home extends Component {
                     <View style={common.headerTitle}><Text style={common.headerTitleTextW}>我的</Text></View>
                 </View>
                 {this.state.userInfo.user_grade ?
-                    <ScrollView style={[common.ScrollView, { marginTop: -45, zIndex: -1 }]} showsVerticalScrollIndicator={false}>
+                    <ScrollView 
+                    style={[common.ScrollView, { marginTop: -45, zIndex: -1 }]} 
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+
+                        <RefreshControl
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={this.refresh.bind(this, 0)}
+                            colors={["#F5B50E"]}
+                        />
+
+                    }
+                    >
                         <LinearGradient start={{ x: 0.25, y: 0.25 }} end={{ x: 0.75, y: 0.75 }} colors={['#F6BF0A', '#F3A316']} style={[css.topBg, { marginTop: 0, borderBottomLeftRadius: 50, borderTopRightRadius: 0, borderTopLeftRadius: 0, borderBottomRightRadius: 50 }]}></LinearGradient>
                         <View style={css.maFu}>
                             <View style={[common.alignItemsCenter, { marginTop: 20 }]}>
@@ -146,10 +159,12 @@ export default class home extends Component {
                                 </View>
                             </View>
 
-                            <View style={[common.alignItemsB, { marginTop: 25, }]}>
-                                <View style={common.columnCenter}><Text style={css.strong}>{this.state.userCoin.money}</Text><Text style={css.span}>可用余额</Text></View>
-                                <View style={common.columnCenter}><Text style={css.strong}>{this.state.userCoin.integral}</Text><Text style={css.span}>可用积分</Text></View>
-                                <View style={common.columnCenter}><Text style={css.strong}>{this.state.userCoin.coupon}</Text><Text style={css.span}>优惠券</Text></View>
+                            <View style={[common.alignItemsB, { marginTop: 25,flexWrap:'wrap',justifyContent:'center' }]}>
+                                <View style={[common.columnCenter,common.mineFun]}><Text style={css.strong}>{this.state.userCoin.money}</Text><Text style={css.span}>可用余额</Text></View>
+                                <View style={[common.columnCenter,common.mineFun]}><Text style={css.strong}>{this.state.userCoin.integral}</Text><Text style={css.span}>可用积分</Text></View>
+                                <View style={[common.columnCenter,common.mineFun]}><Text style={css.strong}>{this.state.userCoin.coupon}</Text><Text style={css.span}>优惠券</Text></View>
+                                {/* <View style={[common.columnCenter,common.mineFun,{marginTop:20,width:'40%'}]}><Text style={css.strong}>{this.state.userCoin.forecast_balance}</Text><Text style={css.span}>本月预估佣金</Text></View> */}
+                                {/* <TouchableOpacity onPress={() => { navigation.navigate('balanceShiJi') }}  style={[common.columnCenter,common.mineFun,{marginTop:20,width:'40%'}]}><Text style={css.strong}>{this.state.userCoin.balance}</Text><Text style={css.span}>实际到账佣金</Text></TouchableOpacity> */}
                                 {/* <TouchableOpacity onPress={() => { navigation.navigate('balance') }} style={common.columnCenter}><Text style={css.strong}>{this.state.userCoin.money}</Text><Text style={css.span}>可用余额</Text></TouchableOpacity> */}
                                 {/* <TouchableOpacity onPress={() => { navigation.navigate('integral') }} style={common.columnCenter}><Text style={css.strong}>{this.state.userCoin.integral}</Text><Text style={css.span}>可用积分</Text></TouchableOpacity> */}
                                 {/* <TouchableOpacity onPress={() => { navigation.navigate('integral') }} style={[common.alignItemsCenter, { width: '50%', borderLeftWidth: 1, borderLeftColor: '#FFE1AD', justifyContent: 'flex-end' }]}><Text style={css.span}>可用积分：</Text><Text style={css.strong}>{this.state.userCoin.integral}</Text></TouchableOpacity> */}
@@ -182,6 +197,7 @@ export default class home extends Component {
                                     <TouchableOpacity onPress={() => { navigation.navigate('team') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/mine-6.png')} /><Text style={css.funText}>我的推广</Text></TouchableOpacity>
                                     <TouchableOpacity onPress={() => { navigation.navigate('detail') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/mine-ye.png')} /><Text style={css.funText}>余额明细</Text></TouchableOpacity>
                                     <TouchableOpacity onPress={() => { navigation.navigate('integralDetail') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/mine-jf.png')} /><Text style={css.funText}>积分明细</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('yongJinDetail') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/yj.png')} /><Text style={css.funText}>佣金明细</Text></TouchableOpacity>
                                     {/* <TouchableOpacity onPress={() => { navigation.navigate('card') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/mine-9.png')} /><Text style={css.funText}>银行卡</Text></TouchableOpacity>
                                     <TouchableOpacity onPress={() => { navigation.navigate('address') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/mine-7.png')} /><Text style={css.funText}>地址管理</Text></TouchableOpacity> */}
                                     <TouchableOpacity onPress={() => { navigation.navigate('myAgent') }} style={[common.columnCenter,common.part4]}><Image style={css.funImage} source={require('../../image/mine-13.png')} /><Text style={css.funText}>我的代理</Text></TouchableOpacity>
@@ -216,7 +232,7 @@ export default class home extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('category') }} style={common.navBarBlock}>
                         <Image style={common.navBarIcon} source={require('../../image/tabbar-2.png')} />
-                        <Text style={common.navBarText}>分类</Text>
+                        <Text style={common.navBarText}>本地生活</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('orderIndex') }} style={common.navBarBlock}>
                         <Image style={common.navBarIcon} source={require('../../image/tabbar-3.png')} />
@@ -240,6 +256,7 @@ export default class home extends Component {
             agree:0,
             version: '',
             currentVersion: '',
+            isRefreshing: false,
         }
         this.componentWillUnmount = this.componentWillUnmount.bind(this)
     }
@@ -247,10 +264,13 @@ export default class home extends Component {
     async componentDidMount() {
         this.init();
     }
+    refresh() {
+        this.init();
+    }
     init() {
         this.getUserDetails();
         this.getRule();
-        this.getConfigs();
+        // this.getConfigs();
         var that = this;
         that.setState({
             // over:true,
@@ -336,7 +356,7 @@ export default class home extends Component {
         let { navigation } = this.props;
         var fromData = {};
         getUserDetail(fromData, res => {
-        // console.log(res)
+        console.log(res)
             if (res.code == 1) {
                 this.setState({
                     user: res.data.user,

@@ -426,9 +426,57 @@ function getStatisticsData(bodyData, callback){
     NetWork_Post(netApi,bodyData,callback,reqError)
 }
 
+function getMerchantCategoryIndex(bodyData, callback){
+    let netApi = 'merchantCategoryIndex',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getMerchantListss(bodyData, callback){
+    let netApi = 'merchantListss',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getWalletExchangeIntegral(bodyData, callback){
+    let netApi = 'walletExchangeIntegral',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getWalletExchangeBalance(bodyData, callback){
+    let netApi = 'walletExchangeBalance',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getTbList(bodyData, callback){
+    let netApi = 'tbList',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getDataokeGoodsIndex(bodyData, callback){
+    let netApi = 'dataokeGoodsIndex',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getDataokeGoodsDetail(bodyData, callback){
+    let netApi = 'dataokeGoodsDetail',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
+function getMerchantIndex(bodyData, callback){
+    let netApi = 'merchantIndex',reqError = {error:{success:'false',msg:'获取失败'}};
+    NetWork_Post(netApi,bodyData,callback,reqError)
+}
+
 
 export{
+    getMerchantIndex,
     getStatisticsData,
+    getDataokeGoodsDetail,
+    getDataokeGoodsIndex,
+    getTbList,
+    getWalletExchangeBalance,
+    getWalletExchangeIntegral,
+    getMerchantListss,
+    getMerchantCategoryIndex,
     getOrderOfflineCancel,
     getPond,
     getProductPay,

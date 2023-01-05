@@ -40,7 +40,7 @@ class cashrecord extends React.Component {
         var that = this;
         let { navigation } = this.props;
         var fromData = {};
-        fromData['currency'] = 2;
+        fromData['currency'] = 4;
         fromData['status'] = tab;
         fromData['page'] = this.state.page;
         getLogIndex(fromData, res => {
@@ -64,7 +64,7 @@ class cashrecord extends React.Component {
         var that = this;
         let { navigation } = this.props;
         var fromData = {};
-        fromData['currency'] = 2;
+        fromData['currency'] = 4;
         fromData['status'] = tab;
         fromData['page'] = page;
         getLogIndex(fromData, res => {
@@ -111,7 +111,7 @@ class cashrecord extends React.Component {
                     <TouchableOpacity onPress={() => { navigation.goBack(); }} style={common.headerLeft}>
                         <Image source={require('../../image/return.png')} style={common.returnIcon} />
                     </TouchableOpacity >
-                    <View style={common.headerTitle}><Text style={common.headerTitleText}>积分明细</Text></View>
+                    <View style={common.headerTitle}><Text style={common.headerTitleText}>佣金明细</Text></View>
                 </View>
 
                 <View style={[common.tab,{marginTop:20}]}>

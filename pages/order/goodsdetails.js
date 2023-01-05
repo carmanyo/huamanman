@@ -1,6 +1,7 @@
 
 import React from 'react';
 import {
+    Clipboard,
     Alert,
     TextInput,
     SafeAreaView,
@@ -17,12 +18,13 @@ import {
     Overlay,
     Animated,
     Easing,
+    Linking,
 } from 'react-native';
 
 // import WebView from 'react-native-webview'
 import HTMLView from 'react-native-htmlview'
 import Swiper from 'react-native-swiper';
-import { getLogin, getgoodsdetail, getBuyRule } from '../../network/authapi.js'
+import { getDataokeGoodsDetail, getgoodsdetail, getBuyRule } from '../../network/authapi.js'
 const Toast = Overlay.Toast;
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -50,6 +52,7 @@ class goodsdetails extends React.Component {
             ruleData: {},
             ifshowmodal: 0,
             agree: 0,
+            linkData:'',
         }
 
     }
@@ -65,7 +68,7 @@ class goodsdetails extends React.Component {
             id: this.props.route.params.id,
         })
         this.getData(this.props.route.params.id);
-        this.getBuyRules();
+        // this.getBuyRules();
     }
 
     getBuyRules() {
@@ -87,15 +90,24 @@ class goodsdetails extends React.Component {
         var that = this;
         let { navigation } = this.props;
         var fromData = {};
-        fromData['goods_id'] = id;
-        getgoodsdetail(fromData, res => {
+        fromData['id'] = id;
+        getDataokeGoodsDetail(fromData, res => {
+            console.log('详情')
+            console.log(res)
             if (res.code == 1) {
-            // console.log(222222222222222)
-                var data = that._initGoodsDetailData(res.data);
+                var detail = res.data.detail;
+                var imgArr = detail.imgs.split(',');
                 this.setState({
-                    myData: data,
-                    imgArr: data.detail.image,
+                    myData: detail,
+                    imgArr: imgArr,
+                    linkData:res.data.link,
                 })
+            // console.log(222222222222222)
+                // var data = that._initGoodsDetailData(res.data);
+                // this.setState({
+                //     myData: data,
+                //     imgArr: data.detail.image,
+                // })
             // console.log(this.state.myData)
             }
         })
@@ -134,13 +146,21 @@ class goodsdetails extends React.Component {
 
         return newStr2;
     }
+    async copy() {
+        var that = this;
+        // Clipboard.setString(this.state.config.cz_address);
+        Clipboard.setString(that.state.linkData.longTpwd);
+        let str = await Clipboard.getString();
+    // console.log(str)//我是文本
+        Toast.show('复制成功');
+    }
     render() {
         let { navigation } = this.props;
         let imgArr = this.state.imgArr;
     // console.log(imgArr)
         let maskBg = this.state.showMask == 1 ? <View style={common.mask}></View> : null;
         let mask = this.state.showMask == 1 ? <TouchableOpacity style={[common.mask, { opacity: 0 }]} onPress={this.hideModal.bind(this)}></TouchableOpacity> : null;
-        let detail = this.state.myData.detail;
+        let detail = this.state.myData;
 
         let modal = this.state.ifshowmodal == 1 && this.state.ruleData ?
             <View style={{ position: 'absolute', top: 0, left: 0, width: width, height: height }}>
@@ -184,7 +204,7 @@ class goodsdetails extends React.Component {
                     </TouchableOpacity >
                     <View style={common.headerTitle}><Text style={common.headerTitleText}>商品详情</Text></View>
                 </View>
-                {this.state.myData.detail ?
+                {this.state.myData ?
                     <ScrollView style={[common.ScrollViewHasHeaderAndBottom]} showsVerticalScrollIndicator={false}>
                         <View style={css.main}>
                             {/* 轮播图 */}
@@ -195,7 +215,7 @@ class goodsdetails extends React.Component {
                                         // console.log(item.file_path)
                                             return (
                                                 <View key={index}>
-                                                    <Image source={{ uri: item.file_path }} style={{ width: width, height: width }} />
+                                                    <Image source={{ uri: item }} style={{ width: width, height: width }} />
                                                 </View>
                                             )
                                         })
@@ -205,169 +225,62 @@ class goodsdetails extends React.Component {
 
 
                             <View style={css.goodsinfo}>
-                                <Text style={css.goodsTitle}>{detail.goods_name}</Text>
                                 {/* <View style={common.alignItemsStart}>
                                     {parseInt(detail.goods_sku.goods_coupon) != 0 ? <Text style={css.goodsSku}>满{parseInt(detail.goods_sku.goods_price)}减{parseInt(this.state.myData.detail.goods_sku.goods_coupon)}</Text> : null}
                                 </View> */}
-                                <View style={css.priceWrap}>
-                                    <View style={css.nowPrice}>
-                                        <Text style={css.priceIcon}>￥</Text>
-                                        <Text style={css.priceStrong}>{detail.goods_sku.goods_price}</Text>
+                                <View style={[common.alignItemsB,]}>
+                                    <View style={css.priceWrap}>
+                                        <Text style={{fontSize:30,marginRight:4}}>￥{detail.originalPrice}</Text>
+                                        <View style={css.nowPrice}>
+                                            <Text style={css.priceIcon}>券后：￥</Text>
+                                            <Text style={css.priceStrong}>{detail.actualPrice}</Text>
+                                        </View>
                                     </View>
-                                    {/* <Text style={css.linePrice}>劵后价</Text> */}
                                     {
-                                        detail.goods_sku.goods_coupon != 0 ? <Text style={css.linePrice}>劵可抵：{detail.goods_sku.goods_coupon}元</Text> : null
+                                    detail.monthSales>10000?
+                                    <View style={{marginTop:5}}><Text style={{color:'#999',fontSize:12}}>{(detail.monthSales/10000).toFixed(0)}万+人已购</Text></View>
+                                    :<View style={{marginTop:5}}><Text style={{color:'#999',fontSize:12}}>{detail.monthSales}人已购</Text></View>
                                     }
                                 </View>
                                 {/* <Text style={css.goodsTitle}>{this.state.mydata.name}</Text> */}
                                 <View style={common.FBR}>
-                                    <Text style={css.sale}>库存：{detail.goods_sku.stock_num}</Text>
-                                    {/* <Text style={css.stock}>已售：{detail.goods_sales}</Text> */}
+                                <Text style={[css.goodsTitle,{width:'84%'}]}>{detail.title}</Text>
+                                <View style={css.back}><Text style={{color:'#fff'}}>下单返</Text><Text style={{color:'#fff'}}>￥{detail.rakeBack}</Text></View>
+
+                                </View>
+
+                                <View style={[common.alignItemsCenter,{marginTop:10,borderTopWidth:1,borderColor:'#f5f5f5',paddingTop:15,paddingBottom:5}]}>
+                                    <Text style={{marginRight:6,color:'#999'}}>优惠</Text>
+                                    <View style={common.alignItemsCenter}>
+                                        <Text style={[css.goodsSku,{marginTop:0}]}>{detail.couponPrice}元券</Text>
+                                    </View>
                                 </View>
                             </View>
-
-                            {/* <View style={{ marginTop: 40, paddingLeft: 15, paddingRight: 15 }}> */}
-                            {/* <Text></Text> */}
-                            {/* <HTMLView
-                                    style={{ width: width - 30 }}
-                                    stylesheet={style}
-                                    value={this.escape2Html(this.state.ruleData.value)}
-                                /> */}
-                            {/* </View> */}
-
-                            <View style={css.details}>
-                                <View style={common.columnCenter}>
-                                    <Image source={require("../../image/invite-2.png")} style={css.inviteLogo} />
-                                    <Text style={css.inviteTitle}>商·品·详·情</Text>
-                                </View>
-                                {/* <u-parse v-show="details!=''" :content="details" @preview="preview"></u-parse> */}
-                                {/* <Text>{this.state.myData.detail.content}</Text> */}
-                                <View style={[css.allDetails, { paddingTop: 40, }]}>
-                                    <HTMLView
-                                        style={{ width: width }}
-                                        stylesheet={style}
-                                        value={this.filter(this.state.myData.detail.content)}
-                                    />
-                                </View>
-                                {/* <WebView
-                                    // useWebKit
-                                    // userAgent="RNWebView"
-                                    source={{
-                                        html: this.state.myData.detail.content,
-                                    }}
-                                /> */}
-                                {/* {content} */}
+                            <View style={css.store}>
+                                <Image source={{ uri: detail.shopLogo }} style={{ width: 50, height: 50,marginRight:10 }} />
+                                <Text>{detail.shopName}</Text>
                             </View>
                         </View>
                     </ScrollView>
                     : null}
-                <TouchableOpacity
-                    onPress={() => { this.setState({ ifshowmodal: 1 }) }}
-                    style={[css.linearBtn, { position: 'absolute', bottom: 10, marginTop: 58, marginLeft: 15, width: width - 30, flex: 1 }]}
-                >
-                    <LinearGradient colors={['#F6BF0A', '#F6BF0A']} style={[common.linearBtn, {}]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={common.linearBtnText}>立即购买</Text></LinearGradient>
-                </TouchableOpacity>
+                <View style={{ position: 'absolute', bottom: 10,flex: 1,width:'100%',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-around' }}>
+                    <TouchableOpacity
+                            onPress={this.copy.bind(this)}
+                            style={[css.linearBtn2, { marginTop: 58, width: '45%',}]}
+                        >
+                        <LinearGradient colors={['#fff', '#fff']} style={[common.linearBtn2, {borderWidth:1,borderColor:'#F6BF0A'}]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={[common.linearBtnText,{color:'#F6BF0A'}]}>复制口令</Text></LinearGradient>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => { Linking.openURL(detail.itemLink) }}
+                        style={[css.linearBtn2, { marginTop: 58, width: '45%',}]}
+                    >
+                        <LinearGradient colors={['#F6BF0A', '#F6BF0A']} style={[common.linearBtn2, {}]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={[common.linearBtnText,{lineHeight:42}]}>下单返￥{detail.rakeBack}</Text></LinearGradient>
+                    </TouchableOpacity>
+                </View>
 
 
 
 
-                {/* 规格弹窗 */}
-                {maskBg}
-                <Animated.View style={[common.modal, { transform: [{ translateY: this.translateY }] }]}>
-                    {mask}
-                    {this.state.myData.detail ?
-                        <View style={[common.tradeMain, { paddingBottom: 60 }]}>
-                            <View style={common.goodsInfos}>
-                                {/* <Image style={common.goodsImage} source={{ uri: this.state.myData.detail.goods_image }} /> */}
-                                <Image source={{ uri: this.state.myData.skuCoverImage }} style={common.goodsImage} />
-                                <View>
-                                    <View style={[common.alignItemsCenter]}>
-                                        {/* <Text style={common.priceS}>劵后价：￥</Text> */}
-                                        <Text style={common.priceS}>￥</Text>
-                                        <Text style={common.priceB}>{this.state.myData.goods_price}</Text>
-                                        {
-                                            detail.goods_sku.goods_coupon != 0 ? <Text style={css.linePrice}>劵可抵：{detail.goods_sku.goods_coupon}元</Text> : null
-                                        }
-                                    </View>
-                                    <View style={common.modalStockWrap}>
-                                        <Text style={common.modalStockNum}>库存：{this.state.myData.stock_num}</Text>
-                                    </View>
-                                    <View style={common.modalStockWrap}>
-                                        <Text style={common.modalStockNum}>最低购买数量：{this.state.myData.start_num}</Text>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={common.goodsAttr}>
-                                <View style={common.goodsAttrAcroll} scroll-y="true">
-                                    {this.state.myData.goodsMultiSpec && this.state.myData.goodsMultiSpec.spec_attr.map((item, index) => {
-                                        return (
-                                            <View style={common.groupItem} key={index}>
-                                                <Text style={common.tipsText}>{item.group_name}</Text>
-                                                <View style={[common.alignItemsCenter, { display: 'flex', alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' }]}>
-                                                    {this.specItems(item.spec_items, index)}
-                                                </View>
-                                            </View>
-                                        );
-                                    })}
-                                </View>
-                            </View>
-
-                            <View style={common.alignItemsB}>
-                                <Text style={common.buyNum}>购买数量</Text>
-                                {
-                                    detail.is_online == 2 ? <Text>1</Text> :
-                                        <View style={common.alignItemsCenter}>
-                                            <TouchableOpacity onPress={this.jianNum.bind(this)}>
-                                                <Image style={common.numImage} source={require('../../image/jian.png')} />
-                                            </TouchableOpacity>
-                                            <TextInput
-                                                onChangeText={(value) => this.setState({ inputValue: value })}
-                                                value={this.state.inputValue} style={common.numInput} editable={false} />
-                                            <TouchableOpacity onPress={this.addNum.bind(this)}>
-                                                <Image style={common.numImage} source={require('../../image/add.png')} />
-                                            </TouchableOpacity>
-                                        </View>
-                                }
-
-                            </View>
-
-                            {/* {parseInt(detail.goods_sku.goods_coupon) != 0 ? <View style={common.alignItemsB}><Text style={common.tipsText}>优惠</Text><Text style={common.red}>满{parseInt(detail.goods_sku.goods_price)}减{parseInt(this.state.myData.detail.goods_sku.goods_coupon)}</Text></View> : null} */}
-                            {/* <View style={common.alignItemsB}><Text style={common.tipsText}>返还</Text><Text style={common.red}>购买可赠送200积分</Text></View> */}
-                            {
-                                detail.goods_sku.stock_num == 0 ?
-                                    <TouchableOpacity
-                                        onPress={() => { Toast.show('暂无库存') }}
-                                        style={[css.linearBtn, { position: 'absolute', bottom: 10, marginTop: 58, marginLeft: 15, width: width - 30, flex: 1 }]}
-                                    >
-                                        <LinearGradient colors={['#CAC8C6', '#CAC8C6']} style={[common.linearBtn, {}]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={common.linearBtnText}>暂无库存</Text></LinearGradient>
-                                    </TouchableOpacity> :
-                                    <TouchableOpacity
-                                        // onPress={() => { this.setState({ ifbuy: 1, id: item.id }) }} 
-                                        onPress={() => {
-                                            // if(Number(this.state.inputValue)<detail.start_num){
-                                            //     Toast.show('该商品的购买数量必须大于等于'+detail.start_num)
-                                            // }
-                                            if(Number(this.state.inputValue)<this.state.myData.start_num){
-                                                Toast.show('该商品规格最低购买数量为'+this.state.myData.start_num)
-                                            }else{
-                                                navigation.navigate('orderConfirm', {
-                                                    goods_id: detail.goods_id,
-                                                    goods_num: this.state.inputValue,
-                                                    goods_sku_id: this.state.myData.goods_sku_id,
-                                                    is_check: 0,
-                                                });
-                                            }
-                                        }}
-                                        style={[common.linearBtn, common.marginTop40]}>
-                                        <LinearGradient colors={['#F6BF0A', '#F3A316']} style={[common.FCR, { width: width - 48, borderBottomLeftRadius: 50, borderTopRightRadius: 50, borderTopLeftRadius: 50, borderBottomRightRadius: 50 }]}>
-                                            <Text style={common.linearBtnText}>立即购买</Text>
-                                        </LinearGradient>
-                                    </TouchableOpacity>
-                            }
-
-                        </View>
-                        : null}
-                </Animated.View>
             </View >
         )
     }

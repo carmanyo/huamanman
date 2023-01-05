@@ -17,7 +17,7 @@ import {
     Overlay,
 } from 'react-native';
 
-import { getcashRecord, getLogIndex } from '../../network/authapi.js'
+import { getcashRecord, getCashLists,getExchangeLists } from '../../network/authapi.js'
 const Toast = Overlay.Toast;
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -30,44 +30,18 @@ class cashrecord extends React.Component {
     state = {
         list: [],
         page: 1,
-        tab: 1,
     }
     componentDidMount() {
         // Toast.show('res.msg, 2000');
-        this.getLogIndexs(this.state.tab);
+        this.getExchangeList();
     }
-    getLogIndexs(tab) {
+    getExchangeList() {
         var that = this;
         let { navigation } = this.props;
         var fromData = {};
-        fromData['currency'] = 2;
-        fromData['status'] = tab;
+        fromData['type'] = 2;
         fromData['page'] = this.state.page;
-        getLogIndex(fromData, res => {
-        // console.log(res)
-            if (res.code == 1) {
-                this.setState({
-                    list: res.data.list.data
-                })
-            } else if (res.code == -1) {
-                Toast.show(res.msg);
-                setTimeout(function () {
-                    navigation.navigate('login')
-                }, 2000)
-            } else {
-                Toast.show(res.msg, 2000);
-            }
-        })
-    }
-    
-    getLogIndexs2(tab,page) {
-        var that = this;
-        let { navigation } = this.props;
-        var fromData = {};
-        fromData['currency'] = 2;
-        fromData['status'] = tab;
-        fromData['page'] = page;
-        getLogIndex(fromData, res => {
+        getExchangeLists(fromData, res => {
         // console.log(res)
             if (res.code == 1) {
                 this.setState({
@@ -84,6 +58,11 @@ class cashrecord extends React.Component {
         })
     }
 
+    getStr(str) {
+        var res = str.substr(-4)
+        return res;
+    }
+
     _contentViewScroll(e) {
         var offsetY = e.nativeEvent.contentOffset.y; //滑动距离
         var contentSizeHeight = e.nativeEvent.contentSize.height; //scrollView contentSize高度
@@ -92,15 +71,9 @@ class cashrecord extends React.Component {
             // Console.log('上传滑动到底部事件')
             this.setState({
                 page: this.state.page + 1,
-            }, this.getLogIndexs2(this.state.tab,this.state.page + 1))
+            }, this.getExchangeList())
+
         }
-    }
-    tabClick(tab) {
-        var that = this;
-        that.setState({
-            list:[],
-            tab
-        },that.getLogIndexs(tab))
     }
     render() {
         let { navigation } = this.props;
@@ -111,12 +84,7 @@ class cashrecord extends React.Component {
                     <TouchableOpacity onPress={() => { navigation.goBack(); }} style={common.headerLeft}>
                         <Image source={require('../../image/return.png')} style={common.returnIcon} />
                     </TouchableOpacity >
-                    <View style={common.headerTitle}><Text style={common.headerTitleText}>积分明细</Text></View>
-                </View>
-
-                <View style={[common.tab,{marginTop:20}]}>
-                    <TouchableOpacity onPress={this.tabClick.bind(this, 1)}><Text style={[common.tabText, this.state.tab == 1 ? common.tabTextActive : null]}>收入</Text></TouchableOpacity>
-                    <TouchableOpacity onPress={this.tabClick.bind(this, 2)}><Text style={[common.tabText, this.state.tab == 2 ? common.tabTextActive : null]}>支出</Text></TouchableOpacity>
+                    <View style={common.headerTitle}><Text style={common.headerTitleText}>兑换记录</Text></View>
                 </View>
 
                 <View style={[common.main, { marginTop: 0 }]}>
@@ -125,48 +93,43 @@ class cashrecord extends React.Component {
                         <Text style={css.nav}>FEF</Text>
                     </View> */}
                     <ScrollView
-                        style={[common.ScrollViewHasHeader, { marginTop: 20 }]}
+                        style={common.ScrollViewHasHeader}
                         onMomentumScrollEnd={this._contentViewScroll.bind(this)}
                     >
-                        {/* 空页面  重要！勿删 */}
                         {
                             this.state.list.length == 0 ?
-                                <View style={common.empty}>
-                                    <Image style={common.emptyIcon} source={require('../../image/empty2.png')} />
-                                    <Text style={common.emptyH1}>暂无记录~</Text>
+                                <View style={[common.empty,]}>
+                                    <Image style={common.emptyIcon} source={require('../../image/empty.png')} />
+                                    <Text style={common.emptyH1}>暂无记录</Text>
                                 </View> : null
                         }
                         {this.state.list.map((item, index) => {
                             return (
-                                <View style={css.recordBlock}>
+                                <View style={css.recordBlock} key={index}>
                                     <View style={common.alignItemsB}>
-                                        <View style={common.alignItemsCenter}><Text style={[this.state.tab == 1 ?common.red:common.green, { marginRight: 10 }]}>{this.state.tab == 1 ?'收入':'支出'}</Text><Text>{item.typeName}</Text></View>
-                                        <Text style={this.state.tab == 1 ?common.red:common.green}>{this.state.tab == 1 ?'+':'-'}￥{item.num}</Text>
+                                        <View style={common.alignItemsCenter}><Text style={[common.green, { marginRight: 10 }]}>兑换</Text><Text>至积分</Text></View>
+                                        <Text>获得积分：{item.total_number}</Text>
                                     </View>
-                                    {item.desc!=''?<Text style={css.time}>备注：{item.desc}</Text>:null}
-                                    <Text style={css.time}>{item.create_time}</Text>
+                                    <Text style={css.time}>兑换数量：{item.number}</Text>
+                                    {/* <Text style={css.time}>持卡人：{item.cash_order_card.realname}</Text> */}
+                                    {/* <Text style={css.time}>兑换状态：{item.statusName}</Text> */}
+                                    {/* {item.remark!=''?<Text style={css.time}>备注：{item.remark}</Text>:null} */}
+                                    <Text style={css.time}>兑换时间：{item.create_time}</Text>
                                 </View>
                             );
                         })}
 
-                        {/* 空页面  重要！勿删 */}
-                        {/* <View style={common.empty}>
-                            <Image style={common.emptyIcon} source={require('../../image/empty2.png')} />
-                            <Text style={common.emptyH1}>暂无资金明细</Text>
-                            <Text style={common.emptyP}>您还未进行系统消费</Text>
-                        </View> */}
-
                         {/* <View style={css.recordBlock}>
                             <View style={common.alignItemsB}>
-                                <View style={common.alignItemsCenter}><Text style={[common.green, { marginRight: 10 }]}>支出</Text><Text>提现至银行卡</Text></View>
-                                <Text style={common.green}>-￥10000.00</Text>
+                                <View style={common.alignItemsCenter}><Text style={[common.green,{marginRight:10}]}>提现</Text><Text>至银行卡（尾号1254）</Text></View>
+                                <Text>￥10000.00</Text>
                             </View>
                             <Text style={css.time}>2022/09/22 14:40:24</Text>
                         </View>
                         <View style={css.recordBlock}>
                             <View style={common.alignItemsB}>
-                                <View style={common.alignItemsCenter}><Text style={[common.red, { marginRight: 10 }]}>收入</Text><Text>积分兑换</Text></View>
-                                <Text style={common.red}>+￥1300.00</Text>
+                                <View style={common.alignItemsCenter}><Text style={[common.green,{marginRight:10}]}>提现</Text><Text>至银行卡（尾号1254）</Text></View>
+                                <Text>￥10000.00</Text>
                             </View>
                             <Text style={css.time}>2022/09/22 14:40:24</Text>
                         </View> */}

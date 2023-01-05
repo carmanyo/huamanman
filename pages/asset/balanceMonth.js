@@ -75,7 +75,7 @@ class cashrecord extends React.Component {
                     <TouchableOpacity onPress={() => { navigation.goBack(); }} style={common.headerLeft}>
                         <Image source={require('../../image/return.png')} style={common.returnIcon} />
                     </TouchableOpacity >
-                    <View style={common.headerTitle}><Text style={common.headerTitleText}>余额</Text></View>
+                    <View style={common.headerTitle}><Text style={common.headerTitleText}>本月预估佣金</Text></View>
                 </View>
 
                 <View style={[common.main]}>
@@ -86,14 +86,14 @@ class cashrecord extends React.Component {
                             contentContainerStyle={{ alignItems: 'center' }}
                         >
                             <Image source={require('../../image/balance.png')} style={css.jifen} />
-                            <Text style={css.can}>当前可用余额</Text>
+                            <Text style={css.can}>本月预估佣金</Text>
                             <Text style={css.strong}>{this.state.userCoin.money}</Text>
                             <TouchableOpacity onPress={() => { navigation.navigate('cash') }} style={[css.linearBtn, { marginTop: 58, marginLeft: 15, width: 202, marginLeft: 0 }]}>
                                 <LinearGradient colors={['#F6BF0A', '#F3A316']} style={common.linearBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}><Text style={common.linearBtnText}>提现</Text></LinearGradient>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { navigation.navigate('detail') }}>
+                            {/* <TouchableOpacity onPress={() => { navigation.navigate('detail') }}>
                                 <Text style={css.detail}>查看余额明细</Text>
-                            </TouchableOpacity >
+                            </TouchableOpacity > */}
                         </ScrollView>
                         : null} 
                 </View>

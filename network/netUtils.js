@@ -103,6 +103,16 @@ var reqUrl = {
     pond: '/api/config/pond',
     orderOfflineCancel: '/api/user.order/order_offline_cancel',
     statisticsData: '/api/statistics/data',
+
+    merchantCategoryIndex: '/api/merchant.category/index',
+    merchantListss: '/api/merchant/lists',
+    merchantIndex: '/api/merchant/index',
+    walletExchangeIntegral: '/api/wallet.exchange/integral',
+    walletExchangeBalance: '/api/wallet.exchange/balance',
+    tbList: '/api/dataoke.category/tb_list',
+    dataokeGoodsIndex: '/api/dataoke.goods/index',
+    dataokeGoodsDetail: '/api/dataoke.goods/detail',
+
 }
 
 
